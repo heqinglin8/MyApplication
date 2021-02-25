@@ -1,0 +1,4 @@
+include ':app'
+//include ':x2c-apt'
+//include ':x2c-lib'
+rootProject.name='My Application'
