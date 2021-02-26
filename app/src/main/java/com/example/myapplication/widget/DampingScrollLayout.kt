@@ -55,7 +55,6 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
           }
         })
 
-
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {

@@ -50,6 +50,7 @@ class NormalActivity : AppCompatActivity() {
     adapter.register(ImageItemViewBinder())
     // ✨✨✨
     adapter.register(RichViewDelegate())
+    adapter.register(FooterItemViewBinder())
     recyclerView.adapter = adapter
 
     val textItem = TextItem("world")
@@ -72,6 +73,7 @@ class NormalActivity : AppCompatActivity() {
         items.add(RichItem("小艾大人赛高 pos = $i", R.mipmap.img_11))
       }
     }
+    items.add(FooterItem("加载更多"))
     adapter.items = items
     adapter.notifyDataSetChanged()
 
