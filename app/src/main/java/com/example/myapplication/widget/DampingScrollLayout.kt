@@ -5,7 +5,6 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
-import android.view.View
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +27,9 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
     private var isDragging = false  //是否user拖动
     private var isDown = false  //是否按下
     private var mScrollListener: ScrollListener? = null
-    private var footerShowY = 0
+    private var footerShowY = 104.dp
+//    private var footerShowY = 0
+    private var isScrollTop = false
     override fun onFinishInflate() {
         super.onFinishInflate()
         childView = getChildAt(0) as RecyclerView
@@ -40,15 +41,16 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
           override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             super.onScrollStateChanged(recyclerView, newState)
               isDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
-                //如果是是人拖动的情况下，滚动到最后矫正一下位置，有时候会偏离一点
-                if(!isDown && newState == RecyclerView.SCROLL_STATE_IDLE && isLastItem()){
+                //向上滚动的时候，如果是人拖动的情况下，滚动到最后矫正一下位置，有时候会偏离一点
+                if(isScrollTop && !isDown && newState == RecyclerView.SCROLL_STATE_IDLE && isLastItem()){
                     recoverLayout()
                 }
-            Log.i(TAG, "-----------onScrollStateChanged----------- isMoved = $isMoved newState = $newState isDragging = $isDragging isLastItem = ${isLastItem()}")
+            Log.i(TAG, "---onScrollStateChanged---isScrollTop = $isScrollTop isMoved = $isMoved newState = $newState isDragging = $isDragging isLastItem = ${isLastItem()}")
           }
           override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
               super.onScrolled(recyclerView, dx, dy)
-              Log.i(TAG, "-----------onScrolled----------- dy = $dy isDragging = $isDragging isLastItem = ${isLastItem()}")
+              isScrollTop = dy > 0
+              Log.i(TAG, "-----------onScrolled----------- dy = $dy isDragging = $isDragging isLastItem = ${isLastItem()} isScrollTop = $isScrollTop")
               if(!isDragging && isLastItem()){
                   childView!!.stopScroll()
               }
@@ -145,8 +147,8 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
             MotionEvent.ACTION_UP -> {
                 if (isMoved) {
                     recoverLayout()
-                    val scrollYpos = (ev.y - startYpos).toInt()
-                    val offset = (scrollYpos * DAMPING_COEFFICIENT).toInt()
+                    val moveYpos = (ev.y - lastYpos).toInt()
+                    val offset = (moveYpos * DAMPING_COEFFICIENT).toInt()
                     mScrollListener?.onRecover(offset)
                 }
                 Log.i(TAG,"ACTION_UP isMoved = $isMoved")
