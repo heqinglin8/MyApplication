@@ -50,7 +50,8 @@ class NormalActivity : AppCompatActivity() {
     adapter.register(ImageItemViewBinder())
     // ✨✨✨
     adapter.register(RichViewDelegate())
-    adapter.register(FooterItemViewBinder())
+//    adapter.register(FooterItemViewBinder())
+    adapter.register(FooterItemViewBinder2())
     recyclerView.adapter = adapter
 
     val textItem = TextItem("world")

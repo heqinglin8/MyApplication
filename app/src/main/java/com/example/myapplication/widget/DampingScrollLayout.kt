@@ -28,6 +28,7 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
     private var isDragging = false  //是否user拖动
     private var isDown = false  //是否按下
     private var mScrollListener: ScrollListener? = null
+    private var footerShowY = 0
     override fun onFinishInflate() {
         super.onFinishInflate()
         childView = getChildAt(0) as RecyclerView
@@ -173,14 +174,18 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
     private fun recoverLayout() {
         val manager = childView!!.layoutManager as LinearLayoutManager
         val height = childView!!.getBottom() - childView!!.getTop()
-        val offset = height - 104.dp
+        val offset = height - footerShowY
         Log.i(TAG,"recoverLayout offset = $offset")
-        manager.scrollToPositionWithOffset(manager.itemCount - 2,offset)
+        manager.scrollToPositionWithOffset(manager.itemCount - 1,offset)
         isMoved = false
     }
 
+    fun setFooterShowY(footerShowY:Int){
+        this.footerShowY = footerShowY
+    }
+
     /**
-     * 设置知否可以回弹
+     * 设置是否可以回弹
      */
     fun setCanRebound(canRebound:Boolean){
         this.canRebound = canRebound
