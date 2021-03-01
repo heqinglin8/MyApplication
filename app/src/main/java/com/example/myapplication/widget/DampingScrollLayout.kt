@@ -25,7 +25,6 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
     private var lastYpos = 0f
     private var isSuccess = false
     private var canRebound = true  //是否可以回弹
-    private var closePullDown = true  //是否关闭下拉回弹
     private var isDragging = false  //是否user拖动
     private var isDown = false  //是否按下
     private var mScrollListener: ScrollListener? = null
@@ -181,48 +180,10 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
     }
 
     /**
-     * 判断是否可以下拉
-     *
-     * @return true：可以，false:不可以
+     * 设置知否可以回弹
      */
-    private fun canPullDown(): Boolean {
-        if(closePullDown){
-            return false
-        }
-        val firstVisiblePosition: Int = (childView!!.getLayoutManager() as LinearLayoutManager).findFirstVisibleItemPosition()
-        if (firstVisiblePosition != 0 && childView!!.getAdapter()!!.getItemCount() !== 0) {
-            return false
-        }
-        val mostTop = if (childView!!.getChildCount() > 0) childView!!.getChildAt(0).getTop() else 0
-        return mostTop >= 0
-    }
-
-    /**
-     * 判断是否可以上拉
-     *
-     * @return true：可以，false:不可以
-     */
-    private fun canPullUp(): Boolean {
-        val lastItemPosition: Int = childView!!.getAdapter()!!.getItemCount() - 1
-        val lastVisiblePosition: Int = (childView!!.getLayoutManager() as LinearLayoutManager).findLastVisibleItemPosition()
-        if (lastVisiblePosition >= lastItemPosition) {
-            val childIndex: Int = lastVisiblePosition - (childView!!.getLayoutManager() as LinearLayoutManager).findFirstVisibleItemPosition()
-            val childCount: Int = childView!!.getChildCount()
-            val index = Math.min(childIndex, childCount - 1)
-            val lastVisibleChild: View = childView!!.getChildAt(index)
-            if (lastVisibleChild != null) {
-                return lastVisibleChild.bottom <= childView!!.getBottom() - childView!!.getTop()
-            }
-        }
-        return false
-    }
-
     fun setCanRebound(canRebound:Boolean){
         this.canRebound = canRebound
-    }
-
-    fun setClosePullDown(closePullDown:Boolean){
-        this.closePullDown = closePullDown
     }
 
 
