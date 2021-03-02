@@ -94,7 +94,7 @@ class NormalActivity : AppCompatActivity() {
         }
       }
       override fun onRecover(offset: Int) {
-
+        Log.i(TAG, "-----------onRecover-----------offset = $offset")
       }
 
       override fun onScroll(ev: MotionEvent, isScroll: Boolean, isTop: Boolean) {

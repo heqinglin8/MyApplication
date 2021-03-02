@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.listview.dp
+import kotlin.math.abs
 
 
 /**
@@ -83,6 +84,14 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
         return lastVisibleItemPos >= totalItemCount - 1
     }
 
+    private var lastItemShowY = -0.1f
+    private fun canPullUp(y: Float):Boolean{
+        if(abs(y - this.lastItemShowY) >= footerShowY){
+            return true
+        }
+        return false
+    }
+
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if(!this.canRebound){
            return super.dispatchTouchEvent(ev)
@@ -101,9 +110,12 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
                 isDown = true
                 val scrollYpos = (ev.y - startYpos).toInt()
                 val moveYpos = (ev.y - lastYpos).toInt()
-//                val pullDown = scrollYpos > 0 && canPullDown()
                 val pullUp = scrollYpos < 0 && isLastItem()
-                if (pullUp) {
+
+                if(pullUp && lastItemShowY == -1f){
+                    this.lastItemShowY = ev.y
+                }
+                if (pullUp && canPullUp(ev.y)) {
                     cancelChild(ev)
                     val offset = (moveYpos * DAMPING_COEFFICIENT).toInt()
                     Log.i(TAG,"ACTION_DOWN offset = $offset")
@@ -124,10 +136,12 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
                 val scrollYpos = (ev.y - startYpos).toInt()
                 val moveYpos = (ev.y - lastYpos).toInt()
                 lastYpos = ev.y
-//                val pullDown = scrollYpos > 0 && canPullDown()
                 val pullUp = scrollYpos < 0 && isLastItem()
+                if(pullUp && lastItemShowY == -0.1f){
+                    this.lastItemShowY = ev.y
+                }
                 Log.i(TAG,"ACTION_MOVE scrollYpos = $scrollYpos isLastItem = ${isLastItem()}")
-                if (pullUp) {
+                if (pullUp && canPullUp(ev.y)) {
                     cancelChild(ev)
                     val offset = (moveYpos * DAMPING_COEFFICIENT).toInt()
                     Log.i(TAG,"ACTION_MOVE offset = $offset")
@@ -154,6 +168,7 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
                 Log.i(TAG,"ACTION_UP isMoved = $isMoved")
                 lastYpos = ev.y
                 isDown = false
+                lastItemShowY = -0.1f
                 !isSuccess || super.dispatchTouchEvent(ev)
             }
             else -> true
