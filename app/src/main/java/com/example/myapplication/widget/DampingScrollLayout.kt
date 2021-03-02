@@ -28,8 +28,8 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
     private var isDragging = false  //是否user拖动
     private var isDown = false  //是否按下
     private var mScrollListener: ScrollListener? = null
-    private var footerShowY = 104.dp
-//    private var footerShowY = 0
+//    private var footerShowY = 104.dp
+    private var footerShowY = 0
     private var isScrollTop = false
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -121,7 +121,7 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
                     Log.i(TAG,"ACTION_DOWN offset = $offset")
                     val absOffset = Math.abs(offset)
                     childView!!.scrollBy(0, absOffset)
-                    mScrollListener?.onPull(absOffset)
+                    mScrollListener?.onPull(Math.abs(ev.y - this.lastItemShowY))
                     isMoved = true
                     isSuccess = false
                     true
@@ -131,15 +131,17 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
                     isSuccess = true
                     super.dispatchTouchEvent(ev)
                 }
+
             }
             MotionEvent.ACTION_MOVE -> {
                 val scrollYpos = (ev.y - startYpos).toInt()
                 val moveYpos = (ev.y - lastYpos).toInt()
-                lastYpos = ev.y
                 val pullUp = scrollYpos < 0 && isLastItem()
+
                 if(pullUp && lastItemShowY == -0.1f){
                     this.lastItemShowY = ev.y
                 }
+                lastYpos = ev.y
                 Log.i(TAG,"ACTION_MOVE scrollYpos = $scrollYpos isLastItem = ${isLastItem()}")
                 if (pullUp && canPullUp(ev.y)) {
                     cancelChild(ev)
@@ -147,23 +149,21 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
                     Log.i(TAG,"ACTION_MOVE offset = $offset")
                     val absOffset = Math.abs(offset)
                     childView!!.scrollBy(0, absOffset)
-                    mScrollListener?.onPull(absOffset)
+                    mScrollListener?.onPull(Math.abs(ev.y - this.lastItemShowY))
                     isMoved = true
                     isSuccess = false
-                    true
-                } else {
+                    return true
+                }else{
                     startYpos = ev.y
                     isMoved = false
                     isSuccess = true
-                    super.dispatchTouchEvent(ev)
+                    return super.dispatchTouchEvent(ev)
                 }
             }
             MotionEvent.ACTION_UP -> {
                 if (isMoved) {
                     recoverLayout()
-                    val moveYpos = (ev.y - lastYpos).toInt()
-                    val offset = (moveYpos * DAMPING_COEFFICIENT).toInt()
-                    mScrollListener?.onRecover(offset)
+                    mScrollListener?.onRecover(Math.abs(ev.y - this.lastItemShowY))
                 }
                 Log.i(TAG,"ACTION_UP isMoved = $isMoved")
                 lastYpos = ev.y
@@ -213,12 +213,12 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
         /**
          * 拉动事件回调
          */
-        fun onPull(offset:Int)
+        fun onPull(dY:Float)
 
         /**
          * 回弹
          */
-        fun onRecover(offset:Int)
+        fun onRecover(dY:Float)
 
         /**
          * canRebound：是否有关闭阻尼拖动

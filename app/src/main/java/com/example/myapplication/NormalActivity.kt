@@ -79,22 +79,23 @@ class NormalActivity : AppCompatActivity() {
     adapter.notifyDataSetChanged()
 
     overScrollLayout.setScrollListener(object:DampingScrollLayout.ScrollListener{
-      override fun onPull(offset: Int) {
-        Log.i(TAG, "-----------onPull-----------offset = $offset")
-        if (offset > 3) {
+      override fun onPull(dY: Float) {
+        Log.i(TAG, "-----------onPull-----------dY = $dY")
+        if (dY > 3) {
           val itemView: View? = recyclerView.layoutManager!!.findViewByPosition(recyclerView.layoutManager!!.itemCount -1)
           Log.i(TAG, "-----------onPull----------- itemView = $itemView")
           if (itemView != null) {
             val tv = itemView.findViewById<View>(R.id.text)
             Log.i(TAG, "-----------onPull----------- tv = $tv")
             if (tv is TextView) {
-              tv.text = "放开进入礼物墙 offset=$offset"
+              tv.text = "放开进入礼物墙 offset=$dY"
             }
           }
         }
       }
-      override fun onRecover(offset: Int) {
-        Log.i(TAG, "-----------onRecover-----------offset = $offset")
+      override fun onRecover(dY: Float) {
+        Log.i(TAG, "-----------onRecover-----------offset = $dY")
+        overScrollLayout.setFooterShowY(104.dp)
       }
 
       override fun onScroll(ev: MotionEvent, isScroll: Boolean, isTop: Boolean) {
