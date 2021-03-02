@@ -31,8 +31,6 @@ import com.example.myapplication.R
  */
 class FooterItemViewBinder2 : ItemViewBinder<FooterItem, FooterItemViewBinder2.TextHolder>() {
 
-  private var lastShownAnimationPosition: Int = 0
-
   class TextHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val text: TextView = itemView.findViewById(R.id.gift_up_text)
   }
