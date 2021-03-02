@@ -112,7 +112,7 @@ class DampingScrollLayout @JvmOverloads constructor(context: Context?, attrs: At
                 val moveYpos = (ev.y - lastYpos).toInt()
                 val pullUp = scrollYpos < 0 && isLastItem()
 
-                if(pullUp && lastItemShowY == -1f){
+                if(pullUp && lastItemShowY == -0.1f){
                     this.lastItemShowY = ev.y
                 }
                 if (pullUp && canPullUp(ev.y)) {
